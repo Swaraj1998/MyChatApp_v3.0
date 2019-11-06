@@ -60,10 +60,8 @@ public class KeyExchange {
 					}
 					notifySuccess();
 				} catch (IOException e) {
-					System.out.println(e.getMessage());
 					e.printStackTrace();
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-					System.out.println(e.getMessage());
 					e.printStackTrace();
 				}
 			}

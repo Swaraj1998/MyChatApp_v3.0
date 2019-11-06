@@ -44,7 +44,7 @@ public class Client {
 				keys.writeKeysToFile();
 				sendAuthName = false;
 			} else {
-				System.out.println("Reading from key file...");
+				System.out.println("Reading keys from file...");
 				keys.readKeysFromFile();
 				sendAuthName = true;
 			}	

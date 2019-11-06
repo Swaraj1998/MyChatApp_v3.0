@@ -43,7 +43,7 @@ public class WriteThread extends Thread {
 							System.out.print("No. of messages to read (Enter 0 for all): ");
 							int count = Integer.parseInt(inClient.readLine());
 							new ReadFromFile(count).start();
-						} else if (message.equals(":quit")){
+						} else if (message.equals(":quit")) {
 							out.println(message);
 						} else {
 							out.println(Base64.getEncoder().encodeToString(
@@ -55,16 +55,12 @@ public class WriteThread extends Thread {
 				}
 			}
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (BadPaddingException | IllegalBlockSizeException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidKeyException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} 
 	}
