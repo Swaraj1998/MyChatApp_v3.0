@@ -35,7 +35,6 @@ public class ReadThread extends Thread {
 							plainMsg = msg;
 						}
 						System.out.println(plainMsg);
-						Thread.sleep(15);
 						new WriteToFile(plainMsg).start();
 						if(msg.equals("You are disconnected."))
 							break;
@@ -47,9 +46,7 @@ public class ReadThread extends Thread {
 			System.exit(0);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (InvalidKeyException | InterruptedException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
+		} catch (InvalidKeyException | IllegalBlockSizeException e) {
 			e.printStackTrace();
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
