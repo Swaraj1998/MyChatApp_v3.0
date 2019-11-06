@@ -1,19 +1,11 @@
 package client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.util.Base64;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 
 
 public class WriteThread extends Thread {
@@ -22,11 +14,14 @@ public class WriteThread extends Thread {
 	private PrintWriter out;
 	private PublicKey publicKey;
 	private String name;
+	private boolean sendAuthName;
 	
-	public WriteThread(Socket socket, PublicKey publicKey, String name) throws IOException {
+	public WriteThread(Socket socket, PublicKey publicKey, 
+			String name, boolean sendAuthName) throws IOException {
 		this.socket = socket;
 		this.publicKey = publicKey;
 		this.name = name;
+		this.sendAuthName = sendAuthName;
 	}
 
 	@Override
@@ -34,6 +29,8 @@ public class WriteThread extends Thread {
 		try {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			inClient = new BufferedReader(new InputStreamReader(System.in));
+			if (sendAuthName)
+				out.println(name);
 			
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, publicKey);

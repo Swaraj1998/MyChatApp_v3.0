@@ -30,21 +30,22 @@ public class ClientThread implements Runnable {
 				
 				server.addName(name);
 				
-				if (inClient.readLine().equals("::KEY")) {
-					String key = inClient.readLine();
-					server.setEncodedPublicKeyForUser(name, key);
-				} else {
-					this.endConnection();
-					return;
+				if (!server.allKeysPresent()) {
+					if (inClient.readLine().equals("::KEY")) {
+						String key = inClient.readLine();
+						server.setEncodedPublicKeyForUser(name, key);
+					} else {
+						this.endConnection();
+						return;
+					}		
+					synchronized (server) {
+						while (server.getEncodedPublicKeyForUser(name) == null)
+							server.wait();
+					}
+					Thread.sleep((int)(Math.random() * 8000));
+					sendMessage("::KEY");
+					sendMessage(server.getEncodedPublicKeyForUser(name));
 				}
-				
-				synchronized (server) {
-					while (server.getEncodedPublicKeyForUser(name) == null)
-						server.wait();
-				}
-				Thread.sleep((int)(Math.random() * 5000));
-				sendMessage("::KEY");
-				sendMessage(server.getEncodedPublicKeyForUser(name));
 				
 				sendMessage("You are connected!\n");
 				server.broadcast(name + " joined. :)", this);						
@@ -56,8 +57,10 @@ public class ClientThread implements Runnable {
 					}
 				}
 				
-				do {
+				while (true) {
 					message = inClient.readLine();
+					if (message.equals(":quit"))
+						break;
 					if (message != null) {
 						if (server.isOnline(name)) {
 							server.broadcast(message, this);
@@ -66,7 +69,7 @@ public class ClientThread implements Runnable {
 							server.getMsgQueue().add(message);
 						}
 					}
-				} while (!message.equals(":quit"));
+				}
 			}
 			sendMessage("You are disconnected.");
 			this.endConnection();

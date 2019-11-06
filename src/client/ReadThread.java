@@ -1,18 +1,11 @@
 package client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
+import java.security.*;
 import java.util.Base64;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 
 public class ReadThread extends Thread {
 	private Socket socket;
@@ -38,7 +31,7 @@ public class ReadThread extends Thread {
 						String plainMsg;
 						try {
 							plainMsg = new String(cipher.doFinal(Base64.getDecoder().decode(msg)), "UTF-8");
-						} catch (IllegalArgumentException e) {
+						} catch (BadPaddingException | IllegalArgumentException e) {
 							plainMsg = msg;
 						}
 						System.out.println(plainMsg);
@@ -53,16 +46,12 @@ public class ReadThread extends Thread {
 			socket.close();
 			System.exit(0);
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidKeyException | InterruptedException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
-		} catch (BadPaddingException | IllegalBlockSizeException e) {
-			System.out.println(e.getMessage());
+		} catch (IllegalBlockSizeException e) {
 			e.printStackTrace();
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}

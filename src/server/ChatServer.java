@@ -2,10 +2,7 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class ChatServer {
 	private static Socket socket;
@@ -113,10 +110,13 @@ public class ChatServer {
 		if (thisUserName.equals(user1))
 			encodedPubKey1 = new String(key);
 		else
-			encodedPubKey2 = new String(key);
-		
+			encodedPubKey2 = new String(key);	
 		synchronized (this) {
 			this.notifyAll();
 		}
+	}
+	
+	public boolean allKeysPresent() {
+		return ((encodedPubKey1 != null) && (encodedPubKey2 != null));
 	}
 }

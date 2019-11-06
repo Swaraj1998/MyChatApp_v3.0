@@ -1,10 +1,6 @@
 package client;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 public class WriteToFile extends Thread {
 	private String text;

@@ -3,6 +3,7 @@ package client;
 import java.io.*;
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public class Client {
 	private static Socket socket;
@@ -24,28 +25,37 @@ public class Client {
 			Thread.sleep(1000);
 			
 			GenerateAsymKeys keys = new GenerateAsymKeys(2048);
-			keys.createKeys();
+			boolean sendAuthName;
 			
-			KeyExchange keyExchange = new KeyExchange(socket, keys, name);
-			keyExchange.startExchange();
-			
-			System.out.println("Exchanging public keys... ");
-			synchronized (keyExchange) {
-				while (keyExchange.getPublicKey() == null)
-					keyExchange.wait();
-			}
-			System.out.println("Key Received!");
+			if (!keys.keyFileExists()) {
+				keys.createKeys();
+				
+				KeyExchange keyExchange = new KeyExchange(socket, keys, name);
+				keyExchange.startExchange();
+				
+				System.out.println("Exchanging public keys... ");
+				synchronized (keyExchange) {
+					while (keyExchange.getPublicKey() == null)
+						keyExchange.wait();
+				}
+				System.out.println("Key Received!");
+				
+				keys.setPublicKeyOfOtherUser(keyExchange.getPublicKey());
+				keys.writeKeysToFile();
+				sendAuthName = false;
+			} else {
+				System.out.println("Reading from key file...");
+				keys.readKeysFromFile();
+				sendAuthName = true;
+			}	
 			
 			new ReadThread(socket, keys.getPrivateKey()).start();
-			new WriteThread(socket, keyExchange.getPublicKey(), name).start();
+			new WriteThread(socket, keys.getPublicKey(), name, sendAuthName).start();
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			System.out.println(e.getMessage());
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 	}
